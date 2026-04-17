@@ -1,142 +1,167 @@
 <div align="center">
 
-# ⚙️ Asymmetric-Loss-Guided Hybrid CNN-BiLSTM-Attention
-### *Industrial RUL Prediction with Interpretable Failure Heatmaps*
+<img src="https://img.shields.io/badge/%E2%9A%99%EF%B8%8F-Industrial%20AI-FF8C00?style=for-the-badge&labelColor=1a1a2e" alt="Industrial AI"/>
 
-[![arXiv](https://img.shields.io/badge/arXiv-2604.13459-b31b1b?style=for-the-badge&logo=arxiv)](https://arxiv.org/abs/2604.13459)
+# Asymmetric-Loss-Guided Hybrid CNN-BiLSTM-Attention
+
+### ⚙️ *Industrial RUL Prediction with Interpretable Failure Heatmaps* ⚙️
+
+<br/>
+
+[![arXiv](https://img.shields.io/badge/arXiv-2604.13459-b31b1b?style=for-the-badge&logo=arxiv&logoColor=white)](https://arxiv.org/abs/2604.13459)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
-[![Author](https://img.shields.io/badge/Author-Mohammed%20E.%20B.%20Abdullah-blue?style=for-the-badge)](https://github.com/Marco9249)
-[![TensorFlow](https://img.shields.io/badge/Framework-TensorFlow-FF6F00?style=for-the-badge&logo=tensorflow)](https://tensorflow.org/)
-[![Dataset](https://img.shields.io/badge/Dataset-NASA%20C--MAPSS-005A9C?style=for-the-badge)](https://ti.arc.nasa.gov/tech/dash/groups/pcoe/prognostic-data-repository/)
+[![TensorFlow](https://img.shields.io/badge/TensorFlow-2.0+-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white)](https://tensorflow.org/)
+[![NASA C-MAPSS](https://img.shields.io/badge/Data-NASA%20C--MAPSS-005288?style=for-the-badge&logo=nasa&logoColor=white)](https://ti.arc.nasa.gov/tech/dash/groups/pcoe/prognostic-data-repository/)
+
+<br/>
+
+<img src="https://img.shields.io/badge/Author-Mohammed%20Ezzeldin%20Babiker%20Abdullah-4A90D9?style=flat-square&logo=google-scholar&logoColor=white" alt="Author"/>
+
+---
+
+*"Over-estimation kills engines. Our asymmetric loss knows that."*
 
 </div>
 
 ---
 
-## 📄 Abstract
+## 🎯 Why Asymmetric Loss Matters
 
-Turbofan engine degradation under sustained operational stress requires prognostic systems that can **simultaneously** capture multi-sensor spatial correlations and long-range temporal dependencies — while prioritizing **industrial safety** through asymmetric penalization.
+> In predictive maintenance, **not all errors are equal**. Over-estimating RUL means operating an engine beyond its safe life — a potentially catastrophic failure.
 
-This study proposes a hybrid architecture combining:
-- **Twin-Stage 1D-CNN** for multi-sensor spatial correlation extraction
-- **Bidirectional LSTM** for long-range temporal dependency modeling
-- **Bahdanau Additive Attention** (placed after BiLSTM) for interpretable temporal weighting
-- **NASA Asymmetric Exponential Loss** that disproportionately penalizes over-estimation
+<div align="center">
 
-### Results on NASA C-MAPSS FD001 (100 Test Engines):
+| Error Type | Real-World Impact | Loss Penalty |
+|:----------:|:-----------------:|:------------:|
+| ⚠️ **Over-estimation** (d < 0) | Engine failure risk | h₂ = 10 (HEAVY) |
+| ✅ **Under-estimation** (d ≥ 0) | Conservative, safe | h₁ = 13 (lighter) |
+
+</div>
+
+### 🏆 Results on NASA C-MAPSS FD001 (100 Test Engines)
+
+<div align="center">
 
 | Metric | Value |
-|--------|-------|
-| **RMSE** | **17.52 cycles** |
-| **NASA S-Score** | **922.06** |
-| **Loss Asymmetry** | h₂=10 (over-est.) vs h₁=13 (under-est.) |
+|:------:|:-----:|
+| 📉 **RMSE** | **17.52 cycles** |
+| 🎯 **NASA S-Score** | **922.06** |
+| 📊 **MAE** | Competitive |
+| 🔍 **Interpretability** | Attention heatmaps per engine |
+
+</div>
 
 ---
 
-## 🏗️ Model Architecture
+## 🏗️ Architecture
 
 ```
-NASA C-MAPSS Sensor Input (14 sensors × 30 cycles)
-                │
-   ┌────────────▼───────────────┐
-   │  Conv1D (64 filters, k=3)  │  ← Stage 1: Spatial correlation
-   │  BatchNorm + ReLU + Drop   │
-   └────────────┬───────────────┘
-                │
-   ┌────────────▼───────────────┐
-   │  Conv1D (128 filters, k=3) │  ← Stage 2: Deep feature refinement
-   │  BatchNorm + ReLU + Drop   │
-   └────────────┬───────────────┘
-                │
-   ┌────────────▼──────────────────────────┐
-   │  BiLSTM (128 units, return_seq=True)  │  ← Long-range temporal context
-   │  + Dropout(0.3) + LayerNorm           │
-   └────────────┬──────────────────────────┘
-                │
-   ┌────────────▼──────────────────────────┐
-   │  Bahdanau Additive Attention (64u)    │  ← Positioned AFTER BiLSTM
-   │  → Context vector + Attention weights │    Generates interpretable heatmaps
-   └────────────┬──────────────────────────┘
-                │
-   ┌────────────▼───────────┐
-   │  Dense(64) → Dense(32) │  ← Prediction head
-   │  → Dense(1, linear)    │
-   └────────────┬───────────┘
-                │
-          [RUL Prediction — cycles]
+┌─────────────────────────────────────────────────────┐
+│                                                     │
+│   ⚙️  NASA C-MAPSS Input (14 sensors × 30 cycles)  │
+│                        │                            │
+│         ┌──────────────▼──────────────┐             │
+│         │  Conv1D (64, k=3, same)     │  Stage 1    │
+│         │  BatchNorm → ReLU → Drop    │  spatial    │
+│         └──────────────┬──────────────┘             │
+│                        │                            │
+│         ┌──────────────▼──────────────┐             │
+│         │  Conv1D (128, k=3, same)    │  Stage 2    │
+│         │  BatchNorm → ReLU → Drop    │  deeper     │
+│         └──────────────┬──────────────┘             │
+│                        │                            │
+│      ┌─────────────────▼─────────────────┐          │
+│      │  BiLSTM (128 units)               │  Long-   │
+│      │  return_sequences=True            │  range    │
+│      │  + Dropout(0.3) + LayerNorm       │  context  │
+│      └─────────────────┬─────────────────┘          │
+│                        │                            │
+│      ┌─────────────────▼─────────────────┐          │
+│      │  🎯 Bahdanau Additive Attention   │  Placed  │
+│      │  (64 units)                       │  AFTER   │
+│      │  → Context vector                 │  BiLSTM  │
+│      │  → Attention weights (heatmaps)   │          │
+│      └─────────────────┬─────────────────┘          │
+│                        │                            │
+│            ┌───────────▼───────────┐                │
+│            │  Dense(64) → Dense(32)│  Prediction    │
+│            │  → Dense(1, linear)   │  head          │
+│            └───────────┬───────────┘                │
+│                        │                            │
+│    ⚙️ RUL Prediction (cycles) — Asymmetric Loss     │
+│                                                     │
+└─────────────────────────────────────────────────────┘
 ```
 
-### 🔬 Key Design Elements
+### 🔬 Key Technical Specifications
 
-| Element | Value | Description |
-|---------|-------|-------------|
-| **Sliding Window** | **3-step stride** | Matches physical sampling resolution |
-| Over-estimation penalty | h₂ = 10 | Fast exponential growth → LARGE safety penalty |
-| Under-estimation penalty | h₁ = 13 | Slow exponential growth → smaller penalty |
-| RUL cap | 130 cycles | Piecewise-linear plateau labeling |
-| Preprocessing | Zero-leakage | Scaler fit on train only |
+| Specification | Value |
+|:-------------:|:-----:|
+| 🪟 **Sliding Window** | 30 cycles, **3-step stride** |
+| 📏 **RUL Cap** | 130 cycles (piecewise-linear) |
+| 🔒 **Zero Leakage** | Scaler fit on train only |
+| 📐 **Regularization** | L2 (1e-4) + Gradient clipping (1.0) |
+| 🎯 **Attention** | Bahdanau Additive — **after BiLSTM** |
+| 📊 **Output Charts** | 4K resolution (3840×2160) |
 
 ---
 
-## 📂 Project Structure
+## 📂 Repository Structure
 
 ```
-📁 Industrial-RUL-Prediction-Architecture/
-├── 📁 كود التدريب/                       # Training pipeline
-│   └── nasa_rul_prediction.py            # Full architecture + Asymmetric loss
-├── 📁 بيانات التدريب والاختبار/           # NASA C-MAPSS FD001
-│   ├── train_FD001.txt
-│   ├── test_FD001.txt
-│   └── RUL_FD001.txt
-├── requirements.txt
-└── README.md
+📦 Industrial-RUL-Prediction-Architecture/
+│
+├── 📁 training_code/
+│   └── 🧠 nasa_rul_prediction.py         # Full pipeline: train + eval + charts
+│
+├── 📁 dataset/
+│   ├── 📊 train_FD001.txt                # Training trajectories (100 engines)
+│   ├── 📊 test_FD001.txt                 # Test trajectories
+│   └── 📊 RUL_FD001.txt                  # Ground truth RUL values
+│
+├── 📄 RUL_Prediction_Paper.pdf            # Published paper
+├── 📄 RUL_Prediction_Paper.docx
+├── 📋 requirements.txt
+└── 📖 README.md
 ```
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Quick Start
 
 ```bash
-# Clone & install
+# Clone & setup
 git clone https://github.com/Marco9249/Industrial-RUL-Prediction-Architecture.git
 cd Industrial-RUL-Prediction-Architecture
 pip install -r requirements.txt
 
-# Data: download NASA C-MAPSS FD001 from:
-# https://ti.arc.nasa.gov/tech/dash/groups/pcoe/prognostic-data-repository/
-# Place train_FD001.txt, test_FD001.txt, RUL_FD001.txt in root directory
-
-# Run full pipeline (training + evaluation + 4K charts)
-python "كود التدريب/nasa_rul_prediction.py"
+# Run the full pipeline (training + evaluation + 4K charts)
+python training_code/nasa_rul_prediction.py
 ```
 
-### Requirements
-```
-numpy
-pandas
-scikit-learn
-tensorflow
-matplotlib
-seaborn
-```
+### 📊 Auto-Generated Outputs
 
-### 📊 Outputs Generated
-The pipeline automatically generates:
+The pipeline automatically produces:
 - `prediction_comparative_curve_4k.png` — Predictions vs ground truth
-- `loss_metrics_curve_4k.png` — Training convergence curves
-- `attention_heatmap_4k.png` — Interpretable temporal attention maps per engine
-- `error_distribution_4k.png` — Error histogram & scatter plot
+- `loss_metrics_curve_4k.png` — Training convergence curves  
+- `attention_heatmap_4k.png` — Interpretable attention maps per engine
+- `error_distribution_4k.png` — Error histogram & scatter analysis
 
 ---
 
-## 🔗 Related Research by the Same Author
+## 📚 Related Research Papers
+
+<div align="center">
 
 | # | Paper | Repository | arXiv |
-|---|-------|------------|-------|
-| 1 | Physics-Guided CNN-BiLSTM Solar Forecast | [Physics-Guided-CNN-BiLSTM-Solar](https://github.com/Marco9249/Physics-Guided-CNN-BiLSTM-Solar) | [2604.13455](https://arxiv.org/abs/2604.13455) |
-| 2 | Physics-Informed State Space Models (PISSM) | [PISSM-Solar-Forecasting](https://github.com/Marco9249/PISSM-Solar-Forecasting) | [2604.11807](https://arxiv.org/abs/2604.11807) |
-| 3 | Thermodynamic Liquid Manifold Networks (TLMN) | [TLMN-Thermodynamic-Solar-Microgrids](https://github.com/Marco9249/TLMN-Thermodynamic-Solar-Microgrids) | [2604.11909](https://arxiv.org/abs/2604.11909) |
-| 4 | **Asymmetric-Loss RUL Prediction** *(this repo)* | [Here](https://github.com/Marco9249/Industrial-RUL-Prediction-Architecture) | [2604.13459](https://arxiv.org/abs/2604.13459) |
+|:-:|:------|:----------:|:-----:|
+| 1 | Physics-Guided CNN-BiLSTM Solar Forecast | [![Repo](https://img.shields.io/badge/-Repo-181717?style=flat-square&logo=github)](https://github.com/Marco9249/Physics-Guided-CNN-BiLSTM-Solar) | [![arXiv](https://img.shields.io/badge/-2604.13455-b31b1b?style=flat-square&logo=arxiv)](https://arxiv.org/abs/2604.13455) |
+| 2 | Physics-Informed State Space Model (PISSM) | [![Repo](https://img.shields.io/badge/-Repo-181717?style=flat-square&logo=github)](https://github.com/Marco9249/PISSM-Solar-Forecasting) | [![arXiv](https://img.shields.io/badge/-2604.11807-b31b1b?style=flat-square&logo=arxiv)](https://arxiv.org/abs/2604.11807) |
+| 3 | Thermodynamic Liquid Manifold Networks | [![Repo](https://img.shields.io/badge/-Repo-181717?style=flat-square&logo=github)](https://github.com/Marco9249/TLMN-Thermodynamic-Solar-Microgrids) | [![arXiv](https://img.shields.io/badge/-2604.11909-b31b1b?style=flat-square&logo=arxiv)](https://arxiv.org/abs/2604.11909) |
+| **4** | **Asymmetric-Loss RUL Prediction** *(this repo)* 🌟 | [![Repo](https://img.shields.io/badge/-Repo-181717?style=flat-square&logo=github)](https://github.com/Marco9249/Industrial-RUL-Prediction-Architecture) | [![arXiv](https://img.shields.io/badge/-2604.13459-b31b1b?style=flat-square&logo=arxiv)](https://arxiv.org/abs/2604.13459) |
+| 🎮 | Interactive 3D Architecture Visualization | [![Repo](https://img.shields.io/badge/-Repo-181717?style=flat-square&logo=github)](https://github.com/Marco9249/PI-Hybrid-3D-Viz) | — |
+
+</div>
 
 ---
 
@@ -156,22 +181,21 @@ The pipeline automatically generates:
 }
 ```
 
-**APA 7th Edition:**
+> **APA 7th Edition:**
 > Abdullah, M. E. B. (2026). *Asymmetric-Loss-Guided Hybrid CNN-BiLSTM-Attention Model for Industrial RUL Prediction with Interpretable Failure Heatmaps*. arXiv. https://arxiv.org/abs/2604.13459
-
----
-
-## 👤 Author
-
-**Mohammed Ezzeldin Babiker Abdullah**
-*Researcher in Physics-Informed Deep Learning & Industrial Prognostics*
-
-[![GitHub](https://img.shields.io/badge/GitHub-Marco9249-black?style=flat-square&logo=github)](https://github.com/Marco9249)
 
 ---
 
 <div align="center">
 
-© 2026 Mohammed Ezzeldin Babiker Abdullah. All rights reserved.
+### 👤 Author
+
+**Mohammed Ezzeldin Babiker Abdullah**
+
+[![GitHub](https://img.shields.io/badge/GitHub-Marco9249-181717?style=for-the-badge&logo=github)](https://github.com/Marco9249)
+
+---
+
+© 2026 Mohammed Ezzeldin Babiker Abdullah — All rights reserved.
 
 </div>
