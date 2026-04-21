@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مولد الصفحات التمهيدية - جامعة أمدرمان الإسلامية</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Inline Libraries for Offline Support -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.8.2/index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo-section">
+                <img src="https://seeklogo.com/images/O/omdurman-islamic-university-logo-D09D1B9A1F-seeklogo.com.png" alt="UIU Logo">
+                <h2>مركز الأبحاث</h2>
+            </div>
+            <ul class="nav-links">
+                <li class="active" data-step="1"><span>1</span> معلومات البحث</li>
+                <li data-step="2"><span>2</span> الفهارس والجداول</li>
+                <li data-step="3"><span>3</span> المستخلص</li>
+                <li data-step="4"><span>4</span> التصدير النهائي</li>
+            </ul>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="content">
+            <header class="main-header">
+                <h1>قالب البحث العلمي الذكي</h1>
+                <p>مولد الصفحات التمهيدية عالي الدقة (v2.0 Professional)</p>
+            </header>
+
+            <div class="step-content-container">
+                <!-- Step 1: Base Info -->
+                <section class="step-content active" id="step-1">
+                    <div class="card">
+                        <div class="card-title">المعلومات الأساسية للمشروع</div>
+                        <div class="form-grid">
+                            <div class="input-wrapper">
+                                <label>اسم الجامعة</label>
+                                <input type="text" id="univ_name" value="جامعة أمدرمان الإسلامية">
+                            </div>
+                            <div class="input-wrapper">
+                                <label>الكلية</label>
+                                <input type="text" id="college_name" value="كلية العلوم الهندسية">
+                            </div>
+                            <div class="input-wrapper">
+                                <label>القسم</label>
+                                <input type="text" id="dept_name" value="قسم الهندسة الكهربائية والالكترونية">
+                            </div>
+                            <div class="input-wrapper">
+                                <label>المشرف</label>
+                                <input type="text" id="supervisor_name">
+                            </div>
+                            <div class="input-wrapper full-width">
+                                <label>عنوان البحث بالعربية</label>
+                                <input type="text" id="title_ar">
+                            </div>
+                            <div class="input-wrapper full-width">
+                                <label>Research Title in English</label>
+                                <input type="text" id="title_en" dir="ltr">
+                            </div>
+                            <div class="input-wrapper full-width">
+                                <label>أسماء الطلاب (طالب في كل سطر)</label>
+                                <textarea id="students_list" rows="4"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Step 2: Indices -->
+                <section class="step-content" id="step-2">
+                    <div class="card">
+                        <div class="card-title">إدارة فهارس الجداول والأشكال</div>
+                        <p style="margin-bottom: 1.5rem; color: #64748b;">سيتم عرض هذه الفهارس داخل "جداول حقيقية" في النسخة النهائية كما طلبت.</p>
+                        
+                        <div class="tabs">
+                            <button class="tab-btn active" onclick="switchTab('toc')">فهرس المحتويات</button>
+                            <button class="tab-btn" onclick="switchTab('figures')">فهرس الأشكال</button>
+                            <button class="tab-btn" onclick="switchTab('tables')">فهرس الجداول</button>
+                        </div>
+
+                        <div id="tab-toc" class="tab-pane active">
+                            <table id="edit-toc-table" class="edit-table">
+                                <thead>
+                                    <tr><th>العنوان</th><th>المستوى</th><th>الصفحة</th><th>إجراء</th></tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Step 3: Abstract -->
+                <section class="step-content" id="step-3">
+                    <div class="card">
+                        <div class="card-title">المستخلص الدراسي</div>
+                        <div class="form-grid">
+                            <div class="input-wrapper full-width">
+                                <label>المستخلص بالعربية</label>
+                                <textarea id="abstract_ar" rows="12"></textarea>
+                            </div>
+                            <div class="input-wrapper full-width">
+                                <label>Abstract (English)</label>
+                                <textarea id="abstract_en" rows="12" dir="ltr"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Step 4: Export -->
+                <section class="step-content" id="step-4">
+                    <div class="card">
+                        <div class="card-title">المعاينة النهائية والتصدير</div>
+                        <div class="export-actions" style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                            <button class="btn-primary" onclick="exportWord()">📂 تصدير Microsoft Word</button>
+                            <button class="btn-primary" style="background: #e11d48;" onclick="exportPDF()">📄 تصدير PDF احترافي</button>
+                        </div>
+                        <div class="preview-container">
+                            <div id="page-preview" class="a4-page">
+                                <!-- Dynamic Pages Render Here -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <footer class="app-footer">
+                <button id="prev-btn" class="btn-secondary" disabled>السابق</button>
+                <div class="progress-info">خطوة <span id="current-step-label">1</span> من 4</div>
+                <button id="next-btn" class="btn-primary">التالي</button>
+            </footer>
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

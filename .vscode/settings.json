@@ -1,0 +1,8 @@
+{
+    "editor.accessibilitySupport": "on",
+    "editor.allowVariableFontsInAccessibilityMode": true,
+    "task.quickOpen.skip": true,
+    "gitlens.advanced.skipOnboarding": true,
+    "terminal.integrated.allowMnemonics": true,
+    "terminal.integrated.sendKeybindingsToShell": true
+}

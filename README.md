@@ -23,6 +23,9 @@
 
 </div>
 
+> [!IMPORTANT]
+> **Implementation Note**: This repository contains the core architecture and settings as described in the associated research paper. However, some code structures and experimental configurations have been slightly adjusted to facilitate educational study, modification, and independent testing. The codebase will be fully synchronized with the exact methodology presented in the manuscript upon the paper's final formal publication.
+
 ---
 
 ## 🎯 Why Asymmetric Loss Matters
@@ -156,7 +159,7 @@ The pipeline automatically produces:
 | # | Paper | Repository | arXiv |
 |:-:|:------|:----------:|:-----:|
 | 1 | Physics-Guided CNN-BiLSTM Solar Forecast | [![Repo](https://img.shields.io/badge/-Repo-181717?style=flat-square&logo=github)](https://github.com/Marco9249/Physics-Guided-CNN-BiLSTM-Solar) | [![arXiv](https://img.shields.io/badge/-2604.13455-b31b1b?style=flat-square&logo=arxiv)](https://arxiv.org/abs/2604.13455) |
-| 2 | Physics-Informed State Space Model (PISSM) | [![Repo](https://img.shields.io/badge/-Repo-181717?style=flat-square&logo=github)](https://github.com/Marco9249/PISSM-Solar-Forecasting) | [![arXiv](https://img.shields.io/badge/-2604.11807-b31b1b?style=flat-square&logo=arxiv)](https://arxiv.org/abs/2604.11807) |
+| 2 | Physics-Informed State Space Model (PI-SSM) | [![Repo](https://img.shields.io/badge/-Repo-181717?style=flat-square&logo=github)](https://github.com/Marco9249/PI-SSM-Solar-Forecasting) | [![arXiv](https://img.shields.io/badge/-2604.11807-b31b1b?style=flat-square&logo=arxiv)](https://arxiv.org/abs/2604.11807) |
 | 3 | Thermodynamic Liquid Manifold Networks | [![Repo](https://img.shields.io/badge/-Repo-181717?style=flat-square&logo=github)](https://github.com/Marco9249/TLMN-Thermodynamic-Solar-Microgrids) | [![arXiv](https://img.shields.io/badge/-2604.11909-b31b1b?style=flat-square&logo=arxiv)](https://arxiv.org/abs/2604.11909) |
 | **4** | **Asymmetric-Loss RUL Prediction** *(this repo)* 🌟 | [![Repo](https://img.shields.io/badge/-Repo-181717?style=flat-square&logo=github)](https://github.com/Marco9249/Industrial-RUL-Prediction-Architecture) | [![arXiv](https://img.shields.io/badge/-2604.13459-b31b1b?style=flat-square&logo=arxiv)](https://arxiv.org/abs/2604.13459) |
 | 🎮 | Interactive 3D Architecture Visualization | [![Repo](https://img.shields.io/badge/-Repo-181717?style=flat-square&logo=github)](https://github.com/Marco9249/PI-Hybrid-3D-Viz) | — |
@@ -199,3 +202,4 @@ The pipeline automatically produces:
 © 2026 Mohammed Ezzeldin Babiker Abdullah — All rights reserved.
 
 </div>
+
